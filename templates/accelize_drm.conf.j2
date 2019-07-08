@@ -1,0 +1,16 @@
+[Service]
+
+# FPGA images configuration
+{% for image in fpga_image %}
+Environment=ACCELIZE_DRM_IMAGE_{{ loop.index0 }}={{ image }}
+{% endfor %}
+
+# Service configuration
+{% for slot in fpga_slots %}
+Environment=ACCELIZE_DRM_DRIVER_{{ slot }}={{ accelize_drm_driver_name }}
+Environment=ACCELIZE_DRM_CRED_{{ slot }}={{ accelize_drm_cred_dst }}
+Environment=ACCELIZE_DRM_CONF_{{ slot }}={{ accelize_drm_conf_dst }}
+{% if accelize_drm_disabled %}
+Environment=ACCELIZE_DRM_DISABLED_{{ slot }}=true
+{% endif %}
+{% endfor %}

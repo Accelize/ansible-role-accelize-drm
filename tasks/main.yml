@@ -1,0 +1,97 @@
+---
+# Install Accelize DRM library from Accelize repository
+
+- name: Ensure minimal APT dependencies are installed
+  apt:
+    name: "{{ packages }}"
+    state: present
+    install_recommends: false
+    update_cache: true
+  vars:
+    packages:
+      - apt-transport-https
+      - gnupg
+      - software-properties-common
+  retries: 10
+  delay: 1
+  when: ansible_os_family == "Debian"
+
+- name: Add Accelize DEB repository key
+  apt_key:
+    url: https://accelize.s3.amazonaws.com/gpg
+    id: 9DAED11DB55E7EB0
+    state: present
+  register: add_repository_key
+  retries: 3
+  delay: 1
+  when: ansible_os_family == "Debian"
+
+- name: Add Accelize DEB repository
+  apt_repository:
+    repo: "deb https://accelize.s3.amazonaws.com/deb \
+      {{ ansible_distribution_release }} {{ accelize_repository_channel }}"
+    state: present
+    update_cache: true
+  retries: 3
+  delay: 1
+  when: ansible_os_family == "Debian"
+
+- name: Add Accelize RPM repository
+  get_url:
+    url: "https://accelize.s3.amazonaws.com/rpm/accelize_{{ accelize_repository_channel }}.repo"
+    dest: "/etc/yum.repos.d/accelize_{{ accelize_repository_channel }}.repo"
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure Accelize EPEL repository is installed on CentOS/RHEL 7
+  package:
+    name: epel-release
+    state: present
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+- name: Ensure Accelize DRM library is installed
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - libaccelize-drm
+      - "{{ (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7' )| ternary('python36-accelize-drm', 'python3-accelize-drm') }}"
+  retries: 3
+  delay: 1
+
+- name: Ensure Accelize DRM credentials parent directory exists
+  file:
+    path: "{{ accelize_drm_cred_dst | dirname }}"
+    state: directory
+
+- name: Create Accelize DRM credentials file
+  copy:
+    src: "{{ accelize_drm_cred_src }}"
+    dest: "{{ accelize_drm_cred_dst }}"
+
+- name: Ensure Accelize DRM configuration parent directory exists
+  file:
+    path: "{{ accelize_drm_conf_dst | dirname }}"
+    state: directory
+
+- name: Create Accelize DRM configuration file
+  copy:
+    src: "{{ accelize_drm_conf_src }}"
+    dest: "{{ accelize_drm_conf_dst }}"
+
+- name: Ensure Accelize DRM service parent directory exists
+  file:
+    path: /etc/systemd/system/accelize_drm.service.d
+    state: directory
+
+- name: Configure Accelize DRM service
+  template:
+    src: accelize_drm.conf.j2
+    dest: /etc/systemd/system/accelize_drm.service.d/accelize_drm.conf
+
+- name: Ensure Accelize DRM service is started and enabled at boot
+  service:
+    name: accelize_drm
+    state: started
+    enabled: true
+  when: accelize_drm_service_started | bool

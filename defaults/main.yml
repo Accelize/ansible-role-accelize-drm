@@ -1,0 +1,22 @@
+---
+# Accelize repository configuration
+accelize_repository_channel: stable
+
+# Accelize DRM credential and configuration files
+accelize_drm_cred_src: cred.json
+accelize_drm_cred_dst: /root/.accelize_drm/cred.json
+accelize_drm_conf_src: conf.json
+accelize_drm_conf_dst: /etc/accelize_drm/conf.json
+
+# FPGA driver to use with Accelize DRM service
+accelize_drm_driver_name: aws_f1
+
+# If True the DRM service is started and enabled at boot
+accelize_drm_service_started: true
+
+# If True, the DRM service do not license FPGA slots
+accelize_drm_disabled: false
+
+# FPGA configuration:
+fpga_image: []
+fpga_slots: [0]

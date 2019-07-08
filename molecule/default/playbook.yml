@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: ansible-role-accelize-drm
+  vars:
+    # Require FPGA
+    accelize_drm_service_started: false
