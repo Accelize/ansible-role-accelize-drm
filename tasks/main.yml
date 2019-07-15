@@ -22,7 +22,7 @@
     id: 9DAED11DB55E7EB0
     state: present
   register: add_repository_key
-  retries: 3
+  retries: 10
   delay: 1
   when: ansible_os_family == "Debian"
 
@@ -32,7 +32,7 @@
       {{ ansible_distribution_release }} {{ accelize_repository_channel }}"
     state: present
     update_cache: true
-  retries: 3
+  retries: 10
   delay: 1
   when: ansible_os_family == "Debian"
 
@@ -41,12 +41,16 @@
     url: "https://accelize.s3.amazonaws.com/rpm/accelize_{{ accelize_repository_channel }}.repo"
     dest: "/etc/yum.repos.d/accelize_{{ accelize_repository_channel }}.repo"
   when: ansible_os_family == "RedHat"
+  retries: 10
+  delay: 1
 
 - name: Ensure Accelize EPEL repository is installed on CentOS/RHEL 7
   package:
     name: epel-release
     state: present
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  retries: 10
+  delay: 1
 
 - name: Ensure Accelize DRM library is installed
   package:
@@ -56,7 +60,7 @@
     packages:
       - libaccelize-drm
       - "{{ (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7' )| ternary('python36-accelize-drm', 'python3-accelize-drm') }}"
-  retries: 3
+  retries: 10
   delay: 1
 
 - name: Ensure Accelize DRM credentials parent directory exists
