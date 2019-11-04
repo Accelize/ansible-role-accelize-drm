@@ -3,18 +3,19 @@
 
 - name: Ensure minimal APT dependencies are installed
   apt:
-    name: "{{ packages }}"
-    state: present
-    install_recommends: false
-    update_cache: true
-  vars:
-    packages:
+    name:
       - apt-transport-https
       - gnupg
       - software-properties-common
+    state: present
+    install_recommends: false
+    update_cache: true
   retries: 10
   delay: 1
-  when: ansible_os_family == "Debian"
+  when:
+    - ansible_os_family == "Debian"
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
 
 - name: Add Accelize DEB repository key
   apt_key:
@@ -24,7 +25,10 @@
   register: add_repository_key
   retries: 10
   delay: 1
-  when: ansible_os_family == "Debian"
+  when:
+    - ansible_os_family == "Debian"
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
 
 - name: Add Accelize DEB repository
   apt_repository:
@@ -34,34 +38,287 @@
     update_cache: true
   retries: 10
   delay: 1
-  when: ansible_os_family == "Debian"
+  when:
+    - ansible_os_family == "Debian"
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
 
 - name: Add Accelize RPM repository
   get_url:
-    url: "https://accelize.s3.amazonaws.com/rpm/accelize_{{ accelize_repository_channel }}.repo"
+    url: "https://accelize.s3.amazonaws.com/rpm/\
+          accelize_{{ accelize_repository_channel }}.repo"
     dest: "/etc/yum.repos.d/accelize_{{ accelize_repository_channel }}.repo"
-  when: ansible_os_family == "RedHat"
   retries: 10
   delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
 
-- name: Ensure Accelize EPEL repository is installed on CentOS/RHEL 7
+- name: Ensure Accelize EPEL repository is installed on CentOS/RHEL
   package:
     name: epel-release
     state: present
-  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
   retries: 10
   delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version | int <= 8
 
 - name: Ensure Accelize DRM library is installed
   package:
-    name: "{{ packages }}"
+    name: libaccelize-drm
     state: present
-  vars:
-    packages:
-      - libaccelize-drm
-      - "{{ (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7' )| ternary('python36-accelize-drm', 'python3-accelize-drm') }}"
   retries: 10
   delay: 1
+  when:
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
+
+- name: Ensure Accelize DRM Python library is installed
+  package:
+    name: "{{ _python3 }}-accelize-drm"
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - accelize_drm_python | bool
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
+
+- name: Ensure Accelize DRM developpement package is installed
+  package:
+    name: "libaccelize-drm-{{ _devel }}"
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - accelize_drm_devel | bool
+    - not (accelize_drm_from_source | bool)
+    - not (accelize_drm_no_install | bool)
+
+- name: Ensure minimal build dependencies are installed
+  apt:
+    name:
+      - git
+      - g++
+      - libcurl4-openssl-dev
+      - libjsoncpp-dev
+      - make
+      - pkg-config
+      - python3-pip
+    state: present
+    install_recommends: false
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "Debian"
+    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+
+- name: Ensure minimal build dependencies are installed
+  package:
+    name:
+      - git
+      - gcc
+      - gcc-c++
+      - jsoncpp-devel
+      - libcurl-devel
+      - make
+      - "{{ _python3 }}-pip"
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+
+- name: Ensure CMake is installed
+  pip:
+    name: cmake
+    executable: pip3
+    extra_args: "{{ _pip_args }}"
+  retries: 10
+  delay: 1
+  when: (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+
+- name: Ensure Python build dependencies are installed
+  package:
+    name: "{{ _python3 }}-{{ _devel }}"
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+    - accelize_drm_python | bool
+
+- name: Ensure Python build dependencies are installed from PIP
+  pip:
+    name:
+      - setuptools
+      - wheel
+      - cython
+    executable: pip3
+    extra_args: "{{ _pip_args }}"
+  retries: 10
+  delay: 1
+  when:
+    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+    - accelize_drm_python | bool
+
+- name: Ensure packaging dependencies are installed
+  apt:
+    name:
+      - dpkg-dev
+      - file
+      - dpkg-sig
+      - gnupg
+    state: present
+    install_recommends: false
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "Debian"
+    - accelize_drm_build_package | bool
+
+- name: Ensure packaging dependencies are installed
+  package:
+    name:
+      - rpm-build
+      - rpm-sign
+      - gnupg
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_build_package | bool
+
+- name: Ensure Doxygen is installed
+  package:
+    name: doxygen
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - accelize_drm_build_doc | bool
+    - ansible_distribution_major_version != '8'
+
+- name: Ensure Doxygen is installed
+  dnf:
+    name: doxygen
+    state: present
+    enablerepo: PowerTools
+  retries: 10
+  delay: 1
+  when:
+    - accelize_drm_build_doc | bool
+    - ansible_os_family == "RedHat"
+    - ansible_distribution_major_version == '8'
+
+- name: Ensure Sphinx is installed
+  pip:
+    name:
+      - sphinx
+      - breathe
+      - sphinx_rtd_theme
+    executable: pip3
+    extra_args: "{{ _pip_args }}"
+  retries: 10
+  delay: 1
+  when: accelize_drm_build_doc | bool
+
+- name: Ensure test dependencies are installed
+  pip:
+    name:
+      - pytest
+      - tox
+    executable: pip3
+    extra_args: "{{ _pip_args }}"
+  retries: 10
+  delay: 1
+  when: accelize_drm_test | bool
+
+- name: Ensure C/C++ coverage dependencies are installed
+  package:
+    name: lcov
+  retries: 10
+  delay: 1
+  when: accelize_drm_coverage | bool
+
+- name: Ensure Python coverage dependencies are installed
+  pip:
+    name: pytest-cov
+    executable: pip3
+    extra_args: "{{ _pip_args }}"
+  retries: 10
+  delay: 1
+  when: accelize_drm_coverage | bool
+
+- name: Ensure ABI check dependencies are installed
+  package:
+    name:
+      - abi-dumper
+      - abi-compliance-checker
+  retries: 10
+  delay: 1
+  when: accelize_drm_abi_check | bool
+
+- name: Create Accelize DRM temporary Git clone directory
+  tempfile:
+    state: directory
+    prefix: accelize_drm_
+  register: accelize_drm_tmp
+  when:
+    - accelize_drm_git_clone is not defined
+    - accelize_drm_from_source | bool
+  changed_when: false
+
+- name: Update Accelize DRM Git clone directory path
+  set_fact: accelize_drm_git_clone="{{ accelize_drm_tmp.path }}"
+  when:
+    - accelize_drm_git_clone is not defined
+    - accelize_drm_tmp.path is defined
+
+- name: Ensure Accelize DRM Git repository is cloned
+  git:
+    repo: 'https://github.com/Accelize/drmlib.git'
+    dest: "{{ accelize_drm_git_clone }}"
+    version: "{{ accelize_drm_git_ref }}"
+    depth: 1
+    recursive: true
+  retries: 10
+  delay: 1
+  when: accelize_drm_git_clone is defined
+
+- name: Ensure Accelize DRM build directory exists
+  file:
+    path: "{{ accelize_drm_git_clone }}/build"
+    state: directory
+  when: accelize_drm_from_source | bool
+
+- name: Ensure Accelize DRM is installed from sources
+  command: "{{ item.command }}"
+  with_items:
+    # Use "/usr" prefix to install in same path as packages
+    - command: "cmake {{ accelize_drm_python | bool |
+                ternary('-DPYTHON3=ON ', '') }}\
+                -Wno-dev -DCMAKE_INSTALL_PREFIX:PATH=/usr .."
+      creates: "{{ accelize_drm_git_clone }}/build/Makefile"
+    - command: make -j
+      creates: "{{ accelize_drm_git_clone }}/build/libaccelize_drm.so"
+    - command: make install
+      creates: /usr/include/accelize/drm.h
+  args:
+    chdir: "{{ accelize_drm_git_clone }}/build"
+    creates: "{{ item.creates }}"
+  when: accelize_drm_from_source | bool
+
+- name: Clean up Accelize DRM temporary clone directory
+  file:
+    path: "{{ accelize_drm_tmp.path }}"
+    state: absent
+  when: accelize_drm_tmp.path is defined
+  changed_when: false
 
 - name: Ensure Accelize DRM credentials parent directory exists
   file:
@@ -87,15 +344,19 @@
   file:
     path: /etc/systemd/system/accelize_drm.service.d
     state: directory
+  when: accelize_drm_python | bool
 
 - name: Configure Accelize DRM service
   template:
     src: accelize_drm.conf.j2
     dest: /etc/systemd/system/accelize_drm.service.d/accelize_drm.conf
+  when: accelize_drm_python | bool
 
 - name: Ensure Accelize DRM service is started and enabled at boot
   service:
     name: accelize_drm
     state: started
     enabled: true
-  when: accelize_drm_service_started | bool
+  when:
+    - accelize_drm_service_started | bool
+    - accelize_drm_python | bool

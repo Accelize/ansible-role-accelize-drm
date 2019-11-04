@@ -1,6 +1,11 @@
 ---
-# Accelize repository configuration
+# Accelize DRM packages
+accelize_drm_python: true
+accelize_drm_devel: false
+
+# Accelize repository or source configuration
 accelize_repository_channel: stable
+accelize_drm_from_source: false
 
 # Accelize DRM credential and configuration files
 accelize_drm_cred_src: cred.json
@@ -20,3 +25,22 @@ accelize_drm_disabled: false
 # FPGA configuration:
 fpga_image: []
 fpga_slots: [0]
+
+# Accelize DRM build configuration
+accelize_drm_git_ref: 'master'
+accelize_drm_no_install: false
+accelize_drm_test: false
+accelize_drm_build: false
+accelize_drm_build_doc: false
+accelize_drm_build_package: false
+accelize_drm_coverage: false
+accelize_drm_abi_check: false
+
+# Internal variables
+_python3: "{{ (ansible_os_family == 'RedHat' and
+           ansible_distribution_major_version == '7' ) |
+           ternary('python36', 'python3') }}"
+_devel: "{{ (ansible_os_family == 'RedHat') | ternary('devel', 'dev') }}"
+_pip_args: "--no-cache-dir --disable-pip-version-check{{
+            (ansible_distribution_major_version == '7' ) |
+            ternary(' --prefix /usr', '') }}"

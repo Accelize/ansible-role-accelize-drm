@@ -1,5 +1,6 @@
+"""Test Ansible"""
 import os
-
+import pytest
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
@@ -10,15 +11,33 @@ def test_packages_installed(host):
     """
     Test that packages are installed
     """
+    if (host.ansible.get_variables().get('accelize_drm_no_install') or
+            host.ansible.get_variables().get('accelize_drm_from_source')):
+        pytest.skip('No packages installed')
+
     assert host.package("libaccelize-drm").is_installed
     assert (host.package("python3-accelize-drm").is_installed or
             host.package("python36-accelize-drm").is_installed)
+
+
+def test_include_installed(host):
+    """
+    Test that includes are installed
+    """
+    if (not host.ansible.get_variables().get('accelize_drm_devel') and
+            not host.ansible.get_variables().get('accelize_drm_from_source')):
+        pytest.skip('No headers installed')
+
+    assert host.file("/usr/include/accelize/drm.h").exists
 
 
 def test_service_configuration_installed(host):
     """
     Test that service configuration file is installed
     """
+    if not host.ansible.get_variables().get('accelize_drm_python'):
+        pytest.skip('No service installed')
+
     conf = host.file(
         '/etc/systemd/system/accelize_drm.service.d/accelize_drm.conf')
     assert conf.exists

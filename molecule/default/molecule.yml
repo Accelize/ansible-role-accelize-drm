@@ -11,14 +11,8 @@ platforms:
   - name: ubuntu_bionic
     image: ubuntu:bionic
     privileged: true
-  - name: ubuntu_xenial
-    image: ubuntu:xenial
-    privileged: true
-  - name: debian_stretch
-    image: debian:stretch
-    privileged: true
-  - name: debian_buster
-    image: debian:buster
+  - name: ubuntu_bionic_deps
+    image: ubuntu:bionic
     privileged: true
   - name: ubuntu_latest
     image: ubuntu:latest
@@ -26,13 +20,45 @@ platforms:
   - name: centos_7
     image: centos:7
     privileged: true
-  - name: fedora_29
-    image: fedora:29
+  - name: centos_7_from_src
+    image: centos:7
     privileged: true
+  - name: centos_7_deps
+    image: centos:7
+    privileged: true
+  - name: fedora_30
+    image: fedora:30
+    privileged: true
+
 provisioner:
   name: ansible
   lint:
     name: ansible-lint
+  inventory:
+    host_vars:
+      centos_7:
+        accelize_drm_devel: true
+      centos_7_from_src:
+        accelize_drm_from_source: true
+        accelize_drm_git_clone: /opt
+      centos_7_deps:
+        accelize_drm_no_install: true
+        accelize_drm_test: true
+        accelize_drm_build: true
+        accelize_drm_build_doc: true
+        accelize_drm_build_package: true
+        accelize_drm_coverage: true
+        accelize_drm_abi_check: true
+      ubuntu_bionic:
+        accelize_drm_devel: true
+      ubuntu_bionic_deps:
+        accelize_drm_no_install: true
+        accelize_drm_test: true
+        accelize_drm_build: true
+        accelize_drm_build_doc: true
+        accelize_drm_build_package: true
+        accelize_drm_coverage: true
+        accelize_drm_abi_check: true
 verifier:
   name: testinfra
   lint:
