@@ -324,21 +324,25 @@
   file:
     path: "{{ accelize_drm_cred_dst | dirname }}"
     state: directory
+  when: accelize_drm_cred_src is defined
 
 - name: Create Accelize DRM credentials file
   copy:
     src: "{{ accelize_drm_cred_src }}"
     dest: "{{ accelize_drm_cred_dst }}"
+  when: accelize_drm_cred_src is defined
 
 - name: Ensure Accelize DRM configuration parent directory exists
   file:
     path: "{{ accelize_drm_conf_dst | dirname }}"
     state: directory
+  when: accelize_drm_conf_src is defined
 
 - name: Create Accelize DRM configuration file
   copy:
     src: "{{ accelize_drm_conf_src }}"
     dest: "{{ accelize_drm_conf_dst }}"
+  when: accelize_drm_conf_src is defined
 
 - name: Ensure Accelize DRM service parent directory exists
   file:

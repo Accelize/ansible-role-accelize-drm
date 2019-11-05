@@ -32,9 +32,9 @@ Accelize DRM systemd service configuration.
 
 DRM Configuration:
 Accelize DRM configuration files.
-* **accelize_drm_cred_src**: Path to the local `cred.json` file to transfer to the host. Default to `cred.json`.
+* **accelize_drm_cred_src**: Path to the local `cred.json` file to transfer to the host. If not specified, does not transfer file.
 * **accelize_drm_cred_dst**: Destination path of the `cred.json` file on the target host. Default to `/root/.accelize_drm/cred.json`.
-* **accelize_drm_conf_src**: Path to the local `conf.json` file to transfer to the host. Default to `conf.json`.
+* **accelize_drm_conf_src**: Path to the local `conf.json` file to transfer to the host. If not specified, does not transfer file.
 * **accelize_drm_conf_dst**: Destination path of the `conf.json` file on the target host. Default to `/etc/accelize_drm/conf.json`.
 
 Source installation, test & build requirements:

@@ -8,9 +8,7 @@ accelize_repository_channel: stable
 accelize_drm_from_source: false
 
 # Accelize DRM credential and configuration files
-accelize_drm_cred_src: cred.json
 accelize_drm_cred_dst: /root/.accelize_drm/cred.json
-accelize_drm_conf_src: conf.json
 accelize_drm_conf_dst: /etc/accelize_drm/conf.json
 
 # FPGA driver to use with Accelize DRM service
