@@ -344,24 +344,3 @@
     src: "{{ accelize_drm_conf_src }}"
     dest: "{{ accelize_drm_conf_dst }}"
   when: accelize_drm_conf_src is defined
-
-- name: Ensure Accelize DRM service parent directory exists
-  file:
-    path: /etc/systemd/system/accelize_drm.service.d
-    state: directory
-  when: accelize_drm_python | bool
-
-- name: Configure Accelize DRM service
-  template:
-    src: accelize_drm.conf.j2
-    dest: /etc/systemd/system/accelize_drm.service.d/accelize_drm.conf
-  when: accelize_drm_python | bool
-
-- name: Ensure Accelize DRM service is started and enabled at boot
-  service:
-    name: accelize_drm
-    state: started
-    enabled: true
-  when:
-    - accelize_drm_service_started | bool
-    - accelize_drm_python | bool

@@ -6,5 +6,3 @@
   vars:
     accelize_drm_cred_src: cred.json
     accelize_drm_conf_src: conf.json
-    # Require FPGA
-    accelize_drm_service_started: false

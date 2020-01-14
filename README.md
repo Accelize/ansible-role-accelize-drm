@@ -22,14 +22,6 @@ Accelize DRM installation.
 * **accelize_repository_channel**: Accelize Repository channel to use: `stable` or `prerelease`. Default to `stable`.
 * **accelize_drm_from_source**: If `true`, install from sources instead of from package. Default to `false`.
 
-DRM Service:
-Accelize DRM systemd service configuration.
-* **accelize_drm_service_started**: If `true`, start the DRM service and enable it at boot (Require *accelize_drm_python* to `true`). Default to `true`.
-* **accelize_drm_disabled**: If `true`, do not license the FPGA, only program FPGA at service start. Default to `false`.
-* **fpga_slots**: List of FPGA slots to manage. Default to `[0]`.
-* **fpga_image**: List of image to program on FPGA slots. Default to `[]`.
-* **accelize_drm_driver_name**: FPGA driver name to use with the Accelize DRM service. Default to `aws_f1`.
-
 DRM Configuration:
 Accelize DRM configuration files.
 * **accelize_drm_cred_src**: Path to the local `cred.json` file to transfer to the host. If not specified, does not transfer file.

@@ -31,25 +31,6 @@ def test_include_installed(host):
     assert host.file("/usr/include/accelize/drm.h").exists
 
 
-def test_service_configuration_installed(host):
-    """
-    Test that service configuration file is installed
-    """
-    if not host.ansible.get_variables().get('accelize_drm_python'):
-        pytest.skip('No service installed')
-
-    conf = host.file(
-        '/etc/systemd/system/accelize_drm.service.d/accelize_drm.conf')
-    assert conf.exists
-    assert conf.contains('Environment=ACCELIZE_DRM_DRIVER_0=aws_f1')
-    assert conf.contains(
-        'Environment=ACCELIZE_DRM_CRED_0=/root/.accelize_drm/cred.json')
-    assert conf.contains(
-        'Environment=ACCELIZE_DRM_CONF_0=/etc/accelize_drm/conf.json')
-    assert not conf.contains('Environment=ACCELIZE_DRM_DISABLED_0=true')
-    assert not conf.contains('Environment=ACCELIZE_DRM_IMAGE_')
-
-
 def test_library_configuration_installed(host):
     """
     Test that library configuration files are installed
