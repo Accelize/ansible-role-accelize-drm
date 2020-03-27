@@ -134,8 +134,7 @@
 
 - name: Ensure Pip is up to date
   command: "python3 -m pip install -U pip {{ _pip_args }}"
-  when:
-    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+  when: (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
 
 - name: Ensure CMake is installed
   pip:
