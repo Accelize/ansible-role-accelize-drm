@@ -132,14 +132,10 @@
     - ansible_os_family == "RedHat"
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
 
-- name: Ensure scikit-build is installed
-  pip:
-    name: scikit-build
-    executable: pip3
-    extra_args: "{{ _pip_args }}"
-  retries: 10
-  delay: 1
-  when: (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
+- name: Ensure Pip is up to date
+  command: "python3 -m pip install -U pip {{ _pip_args }}"
+  when:
+    - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
 
 - name: Ensure CMake is installed
   pip:
