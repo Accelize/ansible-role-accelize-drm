@@ -3,19 +3,16 @@
 
 dependency:
   name: galaxy
+
 driver:
   name: docker
-lint:
-  name: yamllint
+
 platforms:
   - name: ubuntu_bionic
     image: ubuntu:bionic
     privileged: true
   - name: ubuntu_bionic_deps
     image: ubuntu:bionic
-    privileged: true
-  - name: ubuntu_latest
-    image: ubuntu:latest
     privileged: true
   - name: centos_7
     image: centos:7
@@ -26,14 +23,9 @@ platforms:
   - name: centos_7_deps
     image: centos:7
     privileged: true
-  - name: fedora_30
-    image: fedora:30
-    privileged: true
 
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
   inventory:
     host_vars:
       centos_7:
@@ -59,7 +51,6 @@ provisioner:
         accelize_drm_build_package: true
         accelize_drm_coverage: true
         accelize_drm_abi_check: true
+
 verifier:
   name: testinfra
-  lint:
-    name: flake8
