@@ -1,0 +1,12 @@
+---
+
+- name: Clean up Universal Ctags temporary directory
+  file:
+    path: "{{ ctags_tmp.path }}"
+    state: absent
+  tags: molecule-idempotence-notest
+
+- name: Clean up Accelize DRM temporary clone directory
+  file:
+    path: "{{ accelize_drm_tmp.path }}"
+    state: absent

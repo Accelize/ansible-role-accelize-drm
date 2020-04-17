@@ -285,11 +285,72 @@
     - ansible_os_family == "Debian"
     - accelize_drm_abi_check | bool
 
+- name: Create Universal Ctags temporary directory
+  # Force to update due to conflict with "ctags" package
+  tempfile:
+    state: directory
+    prefix: ctags_
+  register: ctags_tmp
+  notify: Clean up Universal Ctags temporary directory
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+  tags: molecule-idempotence-notest
+
+- name: Download and extract Universal Ctags release tarbal
+  unarchive:
+    src: "https://api.github.com/repos/universal-ctags/ctags/tarball"
+    dest: "{{ ctags_tmp.path }}"
+    remote_src: true
+    extra_opts: ['--strip-components=1']
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+  tags: molecule-idempotence-notest
+
+- name: Ensure Universal Ctags build dependencies are present
+  yum:
+    name:
+      - gcc
+      - make
+      - pkgconfig
+      - autoconf
+      - automake
+      - python3-docutils
+      - libseccomp-devel
+      - jansson-devel
+      - libyaml-devel
+      - libxml2-devel
+    state: present
+    install_weak_deps: false
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+
+- name: Build and install Universal Ctags
+  command: "{{ item }}"
+  args:
+    chdir: "{{ ctags_tmp.path }}"
+  with_items:
+    - ./autogen.sh
+    - ./configure --prefix=/usr
+    - make -j
+    - make install
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+  tags: molecule-idempotence-notest
+
 - name: Create Accelize DRM temporary Git clone directory
   tempfile:
     state: directory
     prefix: accelize_drm_
   register: accelize_drm_tmp
+  notify: Clean up Accelize DRM temporary clone directory
   when:
     - accelize_drm_git_clone is not defined
     - accelize_drm_from_source | bool
@@ -334,13 +395,6 @@
     chdir: "{{ accelize_drm_git_clone }}/build"
     creates: "{{ item.creates }}"
   when: accelize_drm_from_source | bool
-
-- name: Clean up Accelize DRM temporary clone directory
-  file:
-    path: "{{ accelize_drm_tmp.path }}"
-    state: absent
-  when: accelize_drm_tmp.path is defined
-  changed_when: false
 
 - name: Ensure Accelize DRM credentials parent directory exists
   file:
