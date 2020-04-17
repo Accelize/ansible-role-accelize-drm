@@ -318,7 +318,6 @@
       - pkgconfig
       - autoconf
       - automake
-      - python3-docutils
       - libseccomp-devel
       - jansson-devel
       - libyaml-devel
