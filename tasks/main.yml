@@ -240,6 +240,7 @@
       - flake8
       - requests
       - flask
+      - dateutils
     executable: pip3
     extra_args: "{{ _pip_args }}"
   retries: 10
