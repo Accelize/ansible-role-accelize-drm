@@ -70,11 +70,10 @@ To to so:
 * Add a X.Y.Z tag to the commit in order to trigger the automatic job that will publish the new version on the ansible shared repository, Galaxy.
 * The modification will be effective only when the version appears in the [Ansible Galaxy](https://galaxy.ansible.com/accelize/accelize_drm).
 
-### How to add a role?
+### How to add a new role?
 
 * Open the main.yml file in the tasks folder. This file lists all the tasks available and associates the operation to be performed.
-* Create a new role. You can copy paste an existing role that matches your wish the most.
-* Make sure the `name` field is modified appropriately and the `when` field is given a unique name.
+* Create a new role. You can copy paste an existing role that matches your wish the most and modify it appropriately.
 * Save, commit and push the modification on git.
 * Add a X.Y.Z tag to the commit in order to trigger the automatic job that will publish the new version on the ansible shared repository, Galaxy.
 * The modification will be effective only when the version appears in the [Ansible Galaxy](https://galaxy.ansible.com/accelize/accelize_drm).
