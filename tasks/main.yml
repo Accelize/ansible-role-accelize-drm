@@ -240,7 +240,7 @@
       - flake8
       - requests
       - flask
-      - dateutils
+      - python-dateutil
       - pytest-ordering
     executable: pip3
     extra_args: "{{ _pip_args }}"
