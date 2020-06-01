@@ -240,6 +240,8 @@
       - flake8
       - requests
       - flask
+      - python-dateutil
+      - pytest-ordering
     executable: pip3
     extra_args: "{{ _pip_args }}"
   retries: 10

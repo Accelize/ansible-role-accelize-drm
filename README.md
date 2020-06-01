@@ -46,7 +46,7 @@ Example Playbook
 
 ```yaml
 - hosts: servers
-  become: true  
+  become: true
   roles:
      - role: accelize.accelize_drm
 ```
@@ -55,6 +55,28 @@ Dependencies
 ------------
 
 None.
+
+Enhancements
+------------
+
+### How to modify a role?
+
+Some tasks might require an update, like installing a new python library.
+To to so:
+* Open the main.yml file in the tasks folder. This file lists all the tasks available and associates the operation to be performed.
+* Look for the task that must be updated.
+* Modify the appropriate section of the task and save the file.
+* Commit and push the modification on git.
+* Add a X.Y.Z tag to the commit in order to trigger the automatic job that will publish the new version on the ansible shared repository, Galaxy.
+* The modification will be effective only when the version appears in the [Ansible Galaxy](https://galaxy.ansible.com/accelize/accelize_drm).
+
+### How to add a new role?
+
+* Open the main.yml file in the tasks folder. This file lists all the tasks available and associates the operation to be performed.
+* Create a new role. You can copy paste an existing role that matches your wish the most and modify it appropriately.
+* Save, commit and push the modification on git.
+* Add a X.Y.Z tag to the commit in order to trigger the automatic job that will publish the new version on the ansible shared repository, Galaxy.
+* The modification will be effective only when the version appears in the [Ansible Galaxy](https://galaxy.ansible.com/accelize/accelize_drm).
 
 License
 -------
