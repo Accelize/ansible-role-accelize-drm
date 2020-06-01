@@ -1,5 +1,6 @@
 """Test Ansible"""
 import os
+
 import pytest
 import testinfra.utils.ansible_runner
 
@@ -16,8 +17,6 @@ def test_packages_installed(host):
         pytest.skip('No packages installed')
 
     assert host.package("libaccelize-drm").is_installed
-    assert (host.package("python3-accelize-drm").is_installed or
-            host.package("python36-accelize-drm").is_installed)
 
 
 def test_include_installed(host):
