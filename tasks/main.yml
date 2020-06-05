@@ -272,19 +272,7 @@
   retries: 10
   delay: 1
   when:
-    - ansible_os_family == "RedHat"
-    - accelize_drm_abi_check | bool
-
-- name: Ensure ABI check dependencies are installed
-  package:
-    name:
-      - exuberant-ctags
-      - abi-dumper
-      - abi-compliance-checker
-  retries: 10
-  delay: 1
-  when:
-    - ansible_os_family == "Debian"
+    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
 
 - name: Create Universal Ctags temporary directory
@@ -295,7 +283,7 @@
   register: ctags_tmp
   notify: Clean up Universal Ctags temporary directory
   when:
-    - ansible_os_family == "RedHat"
+    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
@@ -308,7 +296,7 @@
   retries: 10
   delay: 1
   when:
-    - ansible_os_family == "RedHat"
+    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
@@ -329,7 +317,7 @@
   retries: 10
   delay: 1
   when:
-    - ansible_os_family == "RedHat"
+    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
 
 - name: Build and install Universal Ctags
@@ -342,7 +330,7 @@
     - make -j
     - make install
   when:
-    - ansible_os_family == "RedHat"
+    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
