@@ -287,16 +287,29 @@
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
-- name: Download and extract Universal Ctags release tarbal
-  unarchive:
-    src: "https://api.github.com/repos/universal-ctags/ctags/tarball"
+#- name: Download and extract Universal Ctags release tarbal
+#  unarchive:
+#    src: "https://api.github.com/repos/universal-ctags/ctags/tarball"
+#    dest: "{{ ctags_tmp.path }}"
+#    remote_src: true
+#    extra_opts: ['--strip-components=1']
+#  retries: 10
+#  delay: 1
+#  when:
+#    - ansible_os_family == "RedHat"
+#    - accelize_drm_abi_check | bool
+#  tags: molecule-idempotence-notest
+
+- name: Clone Universal Ctags
+  git:
+    repo: 'https://github.com/universal-ctags/ctags.git'
     dest: "{{ ctags_tmp.path }}"
-    remote_src: true
-    extra_opts: ['--strip-components=1']
+    version: "{{ master }}"
+    depth: 1
+    recursive: true
   retries: 10
   delay: 1
   when:
-    #- ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
@@ -308,6 +321,7 @@
       - pkgconfig
       - autoconf
       - automake
+      - python3-docutils
       - libseccomp-devel
       - jansson-devel
       - libyaml-devel
@@ -326,7 +340,8 @@
     chdir: "{{ ctags_tmp.path }}"
   with_items:
     - ./autogen.sh
-    - ./configure --prefix=/usr
+    #- ./configure --prefix=/usr
+    - ./configure
     - make -j
     - make install
   when:
