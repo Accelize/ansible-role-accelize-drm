@@ -331,7 +331,27 @@
   retries: 10
   delay: 1
   when:
-    #- ansible_os_family == "RedHat"
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+
+- name: Ensure Universal Ctags build dependencies are present
+  yum:
+    name:
+      - gcc
+      - make
+      - pkg-config
+      - autoconf
+      - automake
+      - python3-docutils
+      - libseccomp-dev
+      - libjansson-dev
+      - libyaml-dev
+      - libxml2-dev
+    state: present
+  retries: 10
+  delay: 1
+  when:
+    - ansible_os_family == "Debian"
     - accelize_drm_abi_check | bool
 
 - name: Build and install Universal Ctags
