@@ -359,12 +359,25 @@
     chdir: "{{ ctags_tmp.path }}"
   with_items:
     - ./autogen.sh
-    #- ./configure --prefix=/usr
+    - ./configure --prefix=/usr
+    - make -j
+    - make install
+  when:
+    - ansible_os_family == "RedHat"
+    - accelize_drm_abi_check | bool
+  tags: molecule-idempotence-notest
+
+- name: Build and install Universal Ctags
+  command: "{{ item }}"
+  args:
+    chdir: "{{ ctags_tmp.path }}"
+  with_items:
+    - ./autogen.sh
     - ./configure
     - make -j
     - make install
   when:
-    #- ansible_os_family == "RedHat"
+    - ansible_os_family == "Debian"
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
 
