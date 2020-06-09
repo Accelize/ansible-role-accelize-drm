@@ -321,6 +321,7 @@
       - pkgconfig
       - autoconf
       - automake
+      - python36-docutils
       - libseccomp-devel
       - jansson-devel
       - libyaml-devel
