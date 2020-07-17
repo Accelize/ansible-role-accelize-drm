@@ -5,7 +5,7 @@ Accelize DRM Ansible Role
 
 This Ansible role install the Accelize DRM.
 
-See [documentation](http://accelize.com/docs) for more information.
+See [documentation](https://tech.accelize.com/documentation/stable/) for more information.
 
 Requirements
 ------------
