@@ -232,7 +232,7 @@
   delay: 1
   when: accelize_drm_build_doc | bool
 
-- name: Ensure test dependencies are installed
+- name: Ensure test python dependencies are installed
   pip:
     name:
       - pytest
@@ -248,6 +248,17 @@
   retries: 10
   delay: 1
   when: accelize_drm_test | bool
+
+- name: Ensure test application dependencies are installed
+  yum:
+    name:
+      - valgrind
+    state: present
+    install_weak_deps: false
+  retries: 10
+  delay: 1
+  when:
+    when: accelize_drm_test | bool
 
 - name: Ensure C/C++ coverage dependencies are installed
   package:
