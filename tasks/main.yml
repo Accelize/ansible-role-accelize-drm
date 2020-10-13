@@ -266,7 +266,6 @@
     name:
       - valgrind
     state: present
-    install_weak_deps: false
   retries: 10
   delay: 1
   when:
