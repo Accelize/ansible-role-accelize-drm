@@ -258,7 +258,20 @@
   retries: 10
   delay: 1
   when:
-    when: accelize_drm_test | bool
+    - accelize_drm_test | bool
+    - ansible_os_family == "RedHat"
+
+- name: Ensure test application dependencies are installed
+  apt:
+    name:
+      - valgrind
+    state: present
+    install_weak_deps: false
+  retries: 10
+  delay: 1
+  when:
+    - accelize_drm_test | bool
+    - ansible_os_family == "Debian"
 
 - name: Ensure C/C++ coverage dependencies are installed
   package:
@@ -347,7 +360,7 @@
     - accelize_drm_abi_check | bool
 
 - name: Ensure Universal Ctags build dependencies are present
-  yum:
+  apt:
     name:
       - gcc
       - make
