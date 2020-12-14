@@ -349,7 +349,7 @@
   git:
     repo: 'https://github.com/universal-ctags/ctags.git'
     dest: "{{ ctags_tmp.path }}"
-    version: "master"
+    version: "p5.9.20201206.0"
     depth: 1
     recursive: true
   retries: 10
