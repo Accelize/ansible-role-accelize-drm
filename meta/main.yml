@@ -13,16 +13,11 @@ galaxy_info:
         - 8
     - name: Ubuntu
       versions:
-        - xenial
+        - focal
         - bionic
     - name: Debian
       versions:
-        - stretch
         - buster
-    - name: Fedora
-      versions:
-        - 30
-        - 31
   galaxy_tags:
     - system
     - fpga
