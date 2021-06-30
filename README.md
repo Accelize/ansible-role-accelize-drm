@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Accelize/ansible-role-accelize-drm.svg?branch=master)](https://travis-ci.org/Accelize/ansible-role-ansible-drm)
+[![Build Status](https://dev.azure.com/Accelize/DRM/_apis/build/status/Ansible%20-%20Accelize%20DRM?branchName=master)](https://dev.azure.com/Accelize/DRM/_build/latest?definitionId=27&branchName=master)
 
 Accelize DRM Ansible Role
 =========================

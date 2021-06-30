@@ -1,2 +1,3 @@
+---
 skip_list:
   - '304'  # Detect CMake option "-DPYTHON3=ON" and environment variable.
