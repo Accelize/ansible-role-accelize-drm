@@ -12,6 +12,8 @@
     update_cache: true
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - not (accelize_drm_from_source | bool)
@@ -25,6 +27,7 @@
   register: add_repository_key
   retries: 10
   delay: 1
+  until: add_repository_key is successful
   when:
     - ansible_os_family == "Debian"
     - not (accelize_drm_from_source | bool)
@@ -38,6 +41,8 @@
     update_cache: true
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - not (accelize_drm_from_source | bool)
@@ -50,20 +55,27 @@
     dest: "/etc/yum.repos.d/accelize_{{ accelize_repository_channel }}.repo"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "RedHat"
     - not (accelize_drm_from_source | bool)
     - not (accelize_drm_no_install | bool)
 
-- name: Ensure Accelize EPEL repository is installed on CentOS/RHEL
-  package:
-    name: epel-release
+- name: Ensure EPEL repository is installed
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/\
+           epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
     state: present
+    install_weak_deps: false
+    disable_gpg_check: true
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
-    - ansible_os_family == "RedHat"
-    - ansible_distribution_major_version | int <= 8
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version in ("7", "8")
 
 - name: Ensure Accelize DRM library is installed
   package:
@@ -71,6 +83,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - not (accelize_drm_from_source | bool)
     - not (accelize_drm_no_install | bool)
@@ -81,6 +95,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - accelize_drm_python | bool
     - not (accelize_drm_from_source | bool)
@@ -92,6 +108,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - accelize_drm_devel | bool
     - not (accelize_drm_from_source | bool)
@@ -110,6 +128,8 @@
     install_recommends: false
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
@@ -126,6 +146,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "RedHat"
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
@@ -138,6 +160,8 @@
     install_recommends: false
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool) or (accelize_drm_test | bool)
@@ -149,6 +173,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "RedHat"
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool) or (accelize_drm_test | bool)
@@ -156,6 +182,10 @@
 - name: Ensure Pip is up to date
   command: "python3 -m pip install -U pip {{ _pip_args }}"
   changed_when: false
+  retries: 10
+  delay: 1
+  register: _result
+  until: _result is successful
   when: (accelize_drm_from_source | bool) or (accelize_drm_build | bool)  or (accelize_drm_test | bool)
 
 - name: Ensure CMake is installed
@@ -165,6 +195,8 @@
     extra_args: "{{ _pip_args }}"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
 
 - name: Ensure Python build dependencies are installed
@@ -173,6 +205,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
     - accelize_drm_python | bool
@@ -187,6 +221,8 @@
     extra_args: "{{ _pip_args }}"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - (accelize_drm_from_source | bool) or (accelize_drm_build | bool)
     - accelize_drm_python | bool
@@ -202,6 +238,8 @@
     install_recommends: false
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - accelize_drm_build_package | bool
@@ -215,6 +253,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "RedHat"
     - accelize_drm_build_package | bool
@@ -225,6 +265,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - accelize_drm_build_doc | bool
     - ansible_distribution_major_version != '8'
@@ -236,6 +278,8 @@
     enablerepo: PowerTools
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - accelize_drm_build_doc | bool
     - ansible_os_family == "RedHat"
@@ -251,6 +295,8 @@
     extra_args: "{{ _pip_args }}"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: accelize_drm_build_doc | bool
 
 - name: Ensure test python dependencies are installed
@@ -268,36 +314,26 @@
     extra_args: "{{ _pip_args }}"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: accelize_drm_test | bool
 
 - name: Ensure test application dependencies are installed
-  yum:
-    name:
-      - valgrind
-    state: present
-    install_weak_deps: false
+  package:
+    name: valgrind
   retries: 10
   delay: 1
-  when:
-    - ansible_os_family == "RedHat"
-    - accelize_drm_test | bool
-
-- name: Ensure test application dependencies are installed
-  apt:
-    name:
-      - valgrind
-    state: present
-  retries: 10
-  delay: 1
-  when:
-    - ansible_os_family == "Debian"
-    - accelize_drm_test | bool
+  register: _result
+  until: _result is successful
+  when: accelize_drm_test | bool
 
 - name: Ensure C/C++ coverage dependencies are installed
   package:
     name: lcov
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: accelize_drm_coverage | bool
 
 - name: Ensure Python coverage dependencies are installed
@@ -307,6 +343,8 @@
     extra_args: "{{ _pip_args }}"
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: accelize_drm_coverage | bool
 
 - name: Ensure ABI check dependencies are installed
@@ -316,9 +354,9 @@
       - abi-compliance-checker
   retries: 10
   delay: 1
-  when:
-    #- ansible_os_family == "RedHat"
-    - accelize_drm_abi_check | bool
+  register: _result
+  until: _result is successful
+  when: accelize_drm_abi_check | bool
 
 - name: Create Universal Ctags temporary directory
   # Force to update due to conflict with "ctags" package
@@ -327,23 +365,8 @@
     prefix: ctags_
   register: ctags_tmp
   notify: Clean up Universal Ctags temporary directory
-  when:
-    #- ansible_os_family == "RedHat"
-    - accelize_drm_abi_check | bool
+  when: accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
-
-#- name: Download and extract Universal Ctags release tarbal
-#  unarchive:
-#    src: "https://api.github.com/repos/universal-ctags/ctags/tarball"
-#    dest: "{{ ctags_tmp.path }}"
-#    remote_src: true
-#    extra_opts: ['--strip-components=1']
-#  retries: 10
-#  delay: 1
-#  when:
-#    - ansible_os_family == "RedHat"
-#    - accelize_drm_abi_check | bool
-#  tags: molecule-idempotence-notest
 
 - name: Clone Universal Ctags
   git:
@@ -354,6 +377,8 @@
     recursive: true
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - accelize_drm_abi_check | bool
   tags: molecule-idempotence-notest
@@ -375,6 +400,8 @@
     install_weak_deps: false
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "RedHat"
     - accelize_drm_abi_check | bool
@@ -395,6 +422,8 @@
     state: present
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when:
     - ansible_os_family == "Debian"
     - accelize_drm_abi_check | bool
@@ -453,6 +482,8 @@
     recursive: true
   retries: 10
   delay: 1
+  register: _result
+  until: _result is successful
   when: accelize_drm_git_clone is defined
 
 - name: Ensure Accelize DRM build directory exists
