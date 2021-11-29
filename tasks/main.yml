@@ -21,7 +21,7 @@
 
 - name: Add Accelize DEB repository key
   apt_key:
-    url: https://accelize.s3.amazonaws.com/gpg
+    url: https://tech.accelize.com/gpg
     id: 9DAED11DB55E7EB0
     state: present
   register: add_repository_key
@@ -35,7 +35,7 @@
 
 - name: Add Accelize DEB repository
   apt_repository:
-    repo: "deb https://accelize.s3.amazonaws.com/deb \
+    repo: "deb https://tech.accelize.com/deb \
       {{ ansible_distribution_release }} {{ accelize_repository_channel }}"
     state: present
     update_cache: true
@@ -50,8 +50,7 @@
 
 - name: Add Accelize RPM repository
   get_url:
-    url: "https://accelize.s3.amazonaws.com/rpm/\
-          accelize_{{ accelize_repository_channel }}.repo"
+    url: "https://tech.accelize.com/rpm/accelize_{{ accelize_repository_channel }}.repo"
     dest: "/etc/yum.repos.d/accelize_{{ accelize_repository_channel }}.repo"
   retries: 10
   delay: 1
