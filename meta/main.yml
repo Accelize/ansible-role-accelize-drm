@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   role_name: accelize_drm
+  namespace: accelize
   author: Accelize
   description: 'This Ansible role install the Accelize DRM library.'
   company: Accelize
